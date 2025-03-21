@@ -9,7 +9,7 @@ ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 # 4. package.json과 package-lock.json 복사 후 의존성 설치
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci --prefer-offline --no-audit
 
 # 5. 모든 Vue.js 코드 복사 후 빌드 실행
 COPY . .
