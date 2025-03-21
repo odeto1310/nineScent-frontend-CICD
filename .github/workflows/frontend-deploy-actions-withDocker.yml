@@ -1,0 +1,42 @@
+name: Frontend Deploy CI/CD
+
+on:
+    push:
+        branches:
+            - main
+            - develop
+
+jobs:
+    deploy:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout Repository
+              uses: actions/checkout@v3
+
+            - name: SSH to EC2 & Deploy Frontend
+              env:
+                  PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+                  HOST: ${{ secrets.EC2_HOST }}
+                  USER: ec2-user
+              run: |
+                  echo "$PRIVATE_KEY" > private_key.pem
+                  chmod 600 private_key.pem
+
+                  ssh -o StrictHostKeyChecking=no -i private_key.pem $USER@$HOST << 'EOF'
+                    #1. 프론트엔드 배포 디렉토리 이동
+                    cd /home/ec2-user/app/frontend || exit 1
+
+                    #2. 최신 코드 가져오기
+                    git pull origin develop || exit 1
+
+                    #3. 기존 컨테이너 중지 및 삭제
+                    docker stop frontend-container || true
+                    docker rm frontend-container || true
+
+                    #4. 새로운 Docker 이미지 빌드
+                    docker build -t frontend-app .
+
+                    #5. 새 컨테이너 실행
+                    docker run -d -p 80:80 --name frontend-container frontend-app
+                  EOF
