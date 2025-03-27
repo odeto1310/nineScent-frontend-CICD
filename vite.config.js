@@ -14,14 +14,9 @@ export default defineConfig({
         strictExports: true,
         preserveSymlinks: true,
     },
-    server: {
-        proxy: {
-            '/api': {
-                target: 'http://15.164.169.146:8080',
-                // target: 'http://localhost:8080',
-                changeOrigin: true,
-                secure: false,
-            },
-        },
+    base: '/', // 반드시 "/"로 설정
+    build: {
+        outDir: 'dist',
+        assetsDir: 'assets',
     },
 });
