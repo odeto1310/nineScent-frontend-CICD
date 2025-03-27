@@ -1,34 +1,36 @@
 <template>
-  <div>
-    <div class="img-header">
-      <img class="header" src="@/assets/images/l1.png" alt="banner" />
-      <img class="header" src="@/assets/images/l2.png" alt="banner" />
-      <img class="header" src="@/assets/images/l3.png" alt="banner" />
-    </div>
-    <div class="grid-container">
-      <div
-        v-for="(item, index) in items"
-        :key="item.itemId"
-        class="grid-item"
-        @click="selectItem(item.itemId)"
-        @mouseover="setHover(index, true)"
-        @mouseleave="setHover(index, false)"
-      >
-        <!-- <img :src="item.imageUrl" :alt="item.itemName" class="item-image" /> -->
-        <!-- <img class="item-image" src="@/assets/images/product1.jpg" alt="" /> -->
-        <!-- <img :src="hoverIndex === index && item.mainPhoto ? item.mainPhoto : defaultImage" :alt="item.itemName" class="item-image" /> -->
-        <div class="image-wrapper">
-          <img :src="defaultImage" :alt="item.itemName" class="item-image default" />
-          <img
-            :src="item.mainPhoto"
-            :alt="item.itemName"
-            class="item-image hover"
-            :class="{ active: hoverIndex === index }"
-          />
+  <div v-if="!isLoading">
+    <div>
+      <div class="img-header">
+        <img class="header" src="@/assets/images/l1.png" alt="banner" />
+        <img class="header" src="@/assets/images/l2.png" alt="banner" />
+        <img class="header" src="@/assets/images/l3.png" alt="banner" />
+      </div>
+      <div class="grid-container">
+        <div
+          v-for="(item, index) in items"
+          :key="item.itemId"
+          class="grid-item"
+          @click="selectItem(item.itemId)"
+          @mouseover="setHover(index, true)"
+          @mouseleave="setHover(index, false)"
+        >
+          <!-- <img :src="item.imageUrl" :alt="item.itemName" class="item-image" /> -->
+          <!-- <img class="item-image" src="@/assets/images/product1.jpg" alt="" /> -->
+          <!-- <img :src="hoverIndex === index && item.mainPhoto ? item.mainPhoto : defaultImage" :alt="item.itemName" class="item-image" /> -->
+          <div class="image-wrapper">
+            <img :src="defaultImage" :alt="item.itemName" class="item-image default" />
+            <img
+              :src="item.mainPhoto"
+              :alt="item.itemName"
+              class="item-image hover"
+              :class="{ active: hoverIndex === index }"
+            />
+          </div>
+  
+          <p class="item-name">{{ item.itemName }} {{ item.itemSize }}</p>
+          <p class="item-price">{{ priceText(item) }}</p>
         </div>
-
-        <p class="item-name">{{ item.itemName }} {{ item.itemSize }}</p>
-        <p class="item-price">{{ priceText(item) }}</p>
       </div>
     </div>
   </div>
@@ -41,7 +43,7 @@ import itemApi from '@/api/itemApi';
 import defaultImage from '@/assets/images/product1.jpg';
 
 const router = useRouter();
-
+const isLoading = ref(true);
 const items = ref([]);
 
 const hoverIndex = ref(null);
@@ -49,11 +51,14 @@ const hoverIndex = ref(null);
 // const hoverImage =
 
 const fetchItems = async () => {
+  isLoading.value = true;
   try {
     const response = await itemApi.getItems();
     items.value = response;
   } catch (error) {
     console.error('Error fetching list', error.message);
+  } finally {
+    isLoading.value = false;
   }
 };
 
@@ -66,7 +71,7 @@ const formattedPrice = (price) => {
 };
 
 const priceText = (item) => {
-  if (item.discountRate > 0) {
+  if (item.discountRate > 0 && item.discountRate !== null) {
     return `${item.discountRate}% ${formattedPrice(item.discountedPrice)}원`;
   } else {
     return `${formattedPrice(item.price)}원`;

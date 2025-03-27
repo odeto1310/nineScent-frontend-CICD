@@ -127,6 +127,7 @@ let isAdmin = false;
 
 const qnaId = route.params.qnaId;
 const itemId = route.params.id;
+const isLogin = ref(false);
 
 const isQnaOwner = (qna) => {
   return qna.userNo === userNo;
@@ -219,6 +220,12 @@ const formatDate = (date) => {
 };
 
 const addQna = (itemId) => {
+  if (!isLogin.value) {
+    if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+      router.push({ name: 'Login' });
+    }
+    return;
+  }
   router.push({ name: 'AddQna', params: { itemId } });
 };
 
@@ -262,6 +269,9 @@ onMounted(() => {
 
   if (getUserNo) {
     userNo = parseInt(getUserNo);
+    isLogin.value = true;
+  } else {
+    isLogin.value = false;
   }
 
   isAdmin = getRole === 'ROLE_ADMIN';

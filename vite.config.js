@@ -6,17 +6,17 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 
 // https://vite.dev/config/
 export default defineConfig({
-    plugins: [vue(), vueDevTools()],
-    resolve: {
-        alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url)),
-        },
-        strictExports: true,
-        preserveSymlinks: true,
+  plugins: [vue(), vueDevTools()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
+
     base: '/', // 반드시 "/"로 설정
     build: {
         outDir: 'dist',
         assetsDir: 'assets',
+
     },
+  },
 });

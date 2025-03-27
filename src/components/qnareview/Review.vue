@@ -102,8 +102,13 @@ const ratingCounts = ref({ 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 });
 let userNo = 0;
 const itemId = route.params.id;
 
+const isLogin = ref(false);
+
 const isReviewOwner = (review) => {
-  return review.content.userNo === userNo;
+  console.log('userNo', userNo);
+  console.log(review.userNo);
+
+  return review.userNo === userNo;
 };
 
 const currentPage = ref(1);
@@ -144,13 +149,19 @@ const formatDate = (date) => {
 };
 
 const addReview = (itemId) => {
+  if (!isLogin.value) {
+    if (confirm('로그인이 필요한 서비스입니다. 로그인 페이지로 이동하시겠습니까?')) {
+      router.push({ name: 'Login' });
+    }
+    return;
+  }
   router.push({ name: 'AddReview', params: { itemId } });
 };
 
 const editReview = (review) => {
   router.push({
     name: 'UpdateReview',
-    params: { itemId: itemId, reviewId: review.content.reviewId },
+    params: { itemId: itemId, reviewId: review.reviewId },
   });
 };
 
@@ -199,6 +210,9 @@ onMounted(() => {
   const getUserNo = localStorage.getItem('userNo');
   if (getUserNo) {
     userNo = parseInt(getUserNo);
+    isLogin.value = true;
+  } else {
+    isLogin.value = false;
   }
 });
 </script>

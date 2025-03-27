@@ -3,7 +3,13 @@
     <h1>Qna form</h1>
     <div class="item-container">
       <div class="item-photo">
-        <p>{{ itemData.mainPhoto }}</p>
+        <!-- <p>{{ itemData.mainPhoto }}</p> -->
+        <img
+          v-if="itemData.mainPhoto"
+          :src="itemData.mainPhoto"
+          class="main-image"
+          alt="Product Image"
+        />
       </div>
       <div class="item-info">
         <p>{{ itemData.itemName }} {{ itemData.itemSize }}ml</p>
@@ -90,7 +96,7 @@ const priceText = computed(() => {
     : `${formattedPrice.value}원`;
 });
 
-const itemId = route.params.id;
+const itemId = route.params.itemId;
 const questionId = route.params.questionId;
 
 const fetchItemData = async () => {
@@ -172,7 +178,16 @@ onMounted(() => {
 .item-photo {
   width: 100px;
   height: 100px;
-  margin-right: 20px;
+  margin-right: 10px;
+  overflow: hidden;
+}
+
+.item-photo img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
 }
 
 .title-container {
