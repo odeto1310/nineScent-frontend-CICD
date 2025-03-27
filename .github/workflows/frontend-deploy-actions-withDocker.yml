@@ -51,7 +51,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          timeout: 900
+          timeout: 900s
           script: |
             echo "🔧 Stop & remove old container"
             docker stop frontend-container || true
