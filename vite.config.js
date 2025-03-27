@@ -11,15 +11,12 @@ export default defineConfig({
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
-    strictExports: true,
-    preserveSymlinks: true,
-  },
-  server: {
-    proxy: {
-      '/api': {
-        target: 'http://13.125.170.208',
-        changeOrigin: true,
-      },
+
+    base: '/', // 반드시 "/"로 설정
+    build: {
+        outDir: 'dist',
+        assetsDir: 'assets',
+
     },
   },
 });

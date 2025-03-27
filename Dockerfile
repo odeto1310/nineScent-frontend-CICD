@@ -1,5 +1,7 @@
 # 1. Node.js를 사용하여 Vue.js 빌드
-FROM node:18-alpine AS build
+
+FROM --platform=$BUILDPLATFORM node:18-alpine AS build
+
 
 # 2. 작업 디렉토리 설정
 WORKDIR /app
@@ -16,11 +18,21 @@ COPY . .
 RUN npm run build
 
 # 6. Nginx로 정적 파일 제공
-FROM nginx:alpine
+
+FROM --platform=$TARGETPLATFORM nginx:alpine
+
+# 7. 기존 default.conf 제거
+RUN rm -f /etc/nginx/conf.d/default.conf
+
+# 8. Vue.js 빌드 결과물 유지 (삭제 방지)
+WORKDIR /usr/share/nginx/html
+
+# 9. Vue.js 빌드 결과물 복사
 COPY --from=build /app/dist /usr/share/nginx/html
 
-# 7. 컨테이너 실행 시 Nginx 시작
+# 10. 컨테이너 실행 시 Nginx 시작
 CMD ["nginx", "-g", "daemon off;"]
 
-# 8. 컨테이너가 노출할 포트
+# 11. 컨테이너가 노출할 포트
+
 EXPOSE 80
